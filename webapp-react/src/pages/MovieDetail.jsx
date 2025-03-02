@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
 import axios from "axios";
+import { useParams } from "react-router-dom";
+import ReviewForm from "../pages/ReviewForm";
 
 function MovieDetail() {
   const { id } = useParams();
@@ -12,15 +13,23 @@ function MovieDetail() {
     axios
       .get(`http://localhost:3000/movies/${id}`)
       .then((response) => {
-        setMovie(response.data);
+        const data = { ...response.data, reviews: response.data.reviews || [] };
+        setMovie(data);
         setLoading(false);
       })
-      .catch((error) => {
-        console.error("Errore nel caricamento del film:", error);
+      .catch((err) => {
+        console.error("Errore nel caricamento del film:", err);
         setError("Impossibile caricare il film");
         setLoading(false);
       });
   }, [id]);
+
+  const handleReviewAdded = (newReview) => {
+    setMovie((prevMovie) => ({
+      ...prevMovie,
+      reviews: [...prevMovie.reviews, newReview],
+    }));
+  };
 
   if (loading) return <p>Caricamento...</p>;
   if (error) return <p>{error}</p>;
@@ -28,10 +37,8 @@ function MovieDetail() {
 
   return (
     <div className="container movie-detail">
-      <h1>
-        {movie.title} ({movie.year})
-      </h1>
-
+      <h1>{movie.title}</h1>
+      <ReviewForm movieId={id} onReviewAdded={handleReviewAdded} />
       <h2>Recensioni</h2>
       {movie.reviews.length > 0 ? (
         <ul>

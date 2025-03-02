@@ -8,10 +8,12 @@ function Home() {
   useEffect(() => {
     axios
       .get("http://localhost:3000/movies")
-      .then((response) => setMovies(response.data))
-      .catch((error) =>
-        console.error("Errore nel caricamento dei film:", error)
-      );
+      .then((response) => {
+        setMovies(response.data);
+      })
+      .catch((error) => {
+        console.error("Errore nel caricamento dei film:", error);
+      });
   }, []);
 
   return (
@@ -20,9 +22,7 @@ function Home() {
       <ul>
         {movies.map((movie) => (
           <li key={movie.id}>
-            <Link to={`/movie/${movie.id}`}>
-              {movie.title} ({movie.year})
-            </Link>
+            <Link to={`/movie/${movie.id}`}>{movie.title}</Link>
           </li>
         ))}
       </ul>
